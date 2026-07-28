@@ -3,7 +3,7 @@ import MemeSection from "./components/MemeSection";
 
 const App = () => {
   return (
-    <main className='min-h-screen'>
+    <main className="h-dvh overflow-hidden">
       <Navbar />
       <MemeSection />
     </main>

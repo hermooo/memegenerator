@@ -1,138 +1,138 @@
-import ky from "ky";
-import { useEffect, useState } from "react";
-import { downloadImage } from "../utils/imageDownloader";
-import Button from "./Button";
-import Meme from "./Meme";
-
-interface MemeItem {
-  name: string;
-  url: string;
-}
-
-export interface SelectedMeme {
-  topText: string;
-  bottomText: string;
-  url: string;
-}
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useFavoriteTemplates } from '../hooks/useFavoriteTemplates'
+import { useMemeTemplates } from '../hooks/useMemeTemplates'
+import type { MemeTemplate, SelectedMeme } from '../types/meme'
+import { defaultSelectedMeme } from '../types/meme'
+import { downloadMemeImage } from '../utils/imageDownloader'
+import Meme from './Meme'
+import MemeEditorPanel from './MemeEditorPanel'
 
 const MemeSection = () => {
-  const [allMemes, setAllMemes] = useState<MemeItem[]>();
-  const [selectedMeme, setSelectedMeme] = useState<SelectedMeme>({
-    topText: "",
-    bottomText: "",
-    url: "",
-  });
-  const [error, setError] = useState<string | null>(null);
+  const { templates, isLoading, error, retry } = useMemeTemplates()
+  const { favoriteIds, toggleFavorite } = useFavoriteTemplates()
 
-  const fetchMemes = async () => {
-    try {
-      setError(null);
-      const response = await ky
-        .get("https://api.imgflip.com/get_memes")
-        .json<{ success: boolean; data: { memes: MemeItem[] } }>();
+  const [selectedMeme, setSelectedMeme] =
+    useState<SelectedMeme>(defaultSelectedMeme)
+  const [clearTextOnNewTemplate, setClearTextOnNewTemplate] = useState(false)
+  const [downloadBusy, setDownloadBusy] = useState(false)
+  const [downloadError, setDownloadError] = useState<string | null>(null)
+  const [hasInitialTemplate, setHasInitialTemplate] = useState(false)
+  const uploadUrlRef = useRef<string | null>(null)
 
-      const memeData = JSON.stringify(response.data.memes);
-
-      localStorage.setItem("memes", memeData);
-      setAllMemes(response.data.memes);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error(errorMessage);
-      setError("Failed to load memes. Please check your connection and try again.");
+  const revokeUploadUrl = useCallback(() => {
+    if (uploadUrlRef.current) {
+      URL.revokeObjectURL(uploadUrlRef.current)
+      uploadUrlRef.current = null
     }
-  };
+  }, [])
 
-  const handleGenerateNewMeme = () => {
-    if (allMemes && allMemes.length > 0) {
-      const randomIdx = Math.floor(Math.random() * allMemes.length);
-      const randomMeme = allMemes[randomIdx];
-      setSelectedMeme({ ...selectedMeme, url: randomMeme.url, topText: "", bottomText: "" });
-    }
-  };
+  const applyTemplate = useCallback(
+    (template: MemeTemplate, clearText: boolean) => {
+      revokeUploadUrl()
+      setSelectedMeme((prev) => ({
+        ...prev,
+        url: template.url,
+        templateId: template.id,
+        source: 'imgflip',
+        ...(clearText ? { topText: '', bottomText: '' } : {}),
+      }))
+    },
+    [revokeUploadUrl],
+  )
+
+  const pickRandomTemplate = useCallback(
+    (clearText: boolean) => {
+      if (templates.length === 0) return
+      const idx = Math.floor(Math.random() * templates.length)
+      applyTemplate(templates[idx], clearText)
+    },
+    [templates, applyTemplate],
+  )
 
   useEffect(() => {
-    const memes = localStorage.getItem("memes");
-
-    if (memes) {
-      try {
-        setAllMemes(JSON.parse(memes));
-      } catch {
-        console.error("Failed to parse cached memes, fetching fresh data");
-        localStorage.removeItem("memes");
-        fetchMemes();
-      }
-    } else {
-      fetchMemes();
+    if (!hasInitialTemplate && templates.length > 0) {
+      pickRandomTemplate(true)
+      setHasInitialTemplate(true)
     }
-  }, []);
+  }, [templates, hasInitialTemplate, pickRandomTemplate])
 
   useEffect(() => {
-    if (allMemes && allMemes.length > 0) {
-      const randomIdx = Math.floor(Math.random() * allMemes.length);
-      const randomMeme = allMemes[randomIdx];
-      setSelectedMeme({
-        topText: "",
-        bottomText: "",
-        url: randomMeme.url,
-      });
+    return () => revokeUploadUrl()
+  }, [revokeUploadUrl])
+
+  const handleSelectTemplate = (template: MemeTemplate) => {
+    applyTemplate(template, clearTextOnNewTemplate)
+  }
+
+  const handleRandomTemplate = () => {
+    pickRandomTemplate(clearTextOnNewTemplate)
+  }
+
+  const handleUpload = (objectUrl: string) => {
+    revokeUploadUrl()
+    uploadUrlRef.current = objectUrl
+    setSelectedMeme((prev) => ({
+      ...prev,
+      url: objectUrl,
+      templateId: null,
+      source: 'upload',
+    }))
+  }
+
+  const handleCaptionChange = (patch: Partial<SelectedMeme>) => {
+    setSelectedMeme((prev) => ({ ...prev, ...patch }))
+  }
+
+  const handleDownload = async () => {
+    setDownloadError(null)
+    setDownloadBusy(true)
+    const result = await downloadMemeImage(selectedMeme)
+    setDownloadBusy(false)
+    if (!result.ok) {
+      setDownloadError(result.message)
     }
-  }, [allMemes]);
+  }
+
+  const memeLoading = isLoading && !selectedMeme.url
 
   return (
-    <section className='w-full h-full lg:h-[88dvh] flex flex-col p-5 lg:p-0 lg:flex-row overflow-hidden'>
-      <div className='flex-1 flex items-center justify-center lg:justify-start lg:ml-20 bg-white mb-10 lg:mb-0'>
-        <div className='w-full max-w-md'>
-          <p className='text-center lg:text-left text-xl lg:text-4xl font-bold text-purple-900 mb-1'>
-            Welcome to the Random Meme Generator!
-          </p>
-          <p className='text-sm lg:text-base mb-4'>
-            Enter top and bottom text and generate a new meme to customize it. Download your creation when you're done.
-          </p>
-
-          <div className='mb-4'>
-            <label className='block text-sm text-gray-600 mb-1' htmlFor='topText'>
-              Top Text:
-            </label>
-            <input
-              id='topText'
-              type='text'
-              className='w-full border border-gray-300 rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-purple-500'
-              placeholder='Enter top text'
-              value={selectedMeme.topText}
-              onChange={(e) => setSelectedMeme({ ...selectedMeme, topText: e.target.value })}
+    <section className="mt-16 flex h-[calc(100dvh-4rem)] min-h-0 flex-col overflow-hidden lg:flex-row">
+      <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-6 sm:px-6 lg:max-w-xl lg:shrink-0 lg:px-8 lg:py-8 xl:max-w-2xl xl:px-10">
+        <MemeEditorPanel
+          selectedMeme={selectedMeme}
+          templates={templates}
+          favoriteIds={favoriteIds}
+          templatesLoading={isLoading}
+          downloadBusy={downloadBusy}
+          downloadError={downloadError}
+          clearTextOnNewTemplate={clearTextOnNewTemplate}
+          onClearTextOnNewTemplateChange={setClearTextOnNewTemplate}
+          onCaptionChange={handleCaptionChange}
+          onSelectTemplate={handleSelectTemplate}
+          onRandomTemplate={handleRandomTemplate}
+          onToggleFavorite={toggleFavorite}
+          onUpload={handleUpload}
+          onDownload={() => void handleDownload()}
+          onRetryTemplates={retry}
+          templatesError={error}
+          mobilePreview={
+            <Meme
+              meme={selectedMeme}
+              isLoading={memeLoading}
+              variant="inline"
             />
-
-            <label className='block text-sm text-gray-600 mb-1' htmlFor='bottomText'>
-              Bottom Text:
-            </label>
-            <input
-              id='bottomText'
-              type='text'
-              className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500'
-              placeholder='Enter bottom text'
-              value={selectedMeme.bottomText}
-              onChange={(e) => setSelectedMeme({ ...selectedMeme, bottomText: e.target.value })}
-            />
-          </div>
-          {error && <div className='text-red-600 mb-2'>{error}</div>}
-          <div className='flex flex-col lg:flex-row gap-3'>
-            <Button
-              styles='bg-purple-700 hover:bg-purple-800'
-              label='Generate New Meme'
-              onClick={handleGenerateNewMeme}
-            />
-
-            <Button
-              styles='bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700'
-              label='Download Meme'
-              onClick={() => downloadImage(selectedMeme)}
-            />
-          </div>
-        </div>
+          }
+        />
       </div>
-      <Meme meme={selectedMeme} />
+      <div className="relative hidden min-h-0 flex-1 border-l border-(--color-border) lg:block">
+        <Meme
+          meme={selectedMeme}
+          isLoading={memeLoading}
+          variant="stage"
+        />
+      </div>
     </section>
-  );
-};
+  )
+}
 
-export default MemeSection;
+export default MemeSection

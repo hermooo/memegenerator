@@ -1,23 +1,84 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+:root {
+  --color-bg: #faf5ff;
+  --color-nav: #7c3aed;
+  --color-nav-secondary: #6366f1;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f7f3fd;
+  --color-preview-bg: #f3ebfe;
+  --color-fg: #0f172a;
+  --color-fg-muted: #6b7280;
+  --color-border: #efe7fc;
+  --color-primary: #7c3aed;
+  --color-accent: #ec4899;
+  --color-accent-hover: #db2777;
+  --color-accent-fg: #ffffff;
+  --color-focus: #7c3aed;
+}
 
 * {
-  font-family: Karla, Inter, sans-serif;
+  font-family: Nunito, sans-serif;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
 }
 
 @layer utilities {
+  .font-display {
+    font-family: Fredoka, Nunito, sans-serif;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   .text-overlay {
     position: absolute;
-    width: 80%;
+    width: 90%;
     text-align: center;
     left: 50%;
     transform: translateX(-50%);
     padding: 0 5px;
-    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
-    text-transform: uppercase;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 2em;
     color: white;
     letter-spacing: 1px;
-    text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 2px 0 #000, 2px 0 0 #000,
-      0 -2px 0 #000, -2px 0 0 #000, 2px 2px 5px #000;
+    text-shadow:
+      2px 2px 0 #000,
+      -2px -2px 0 #000,
+      2px -2px 0 #000,
+      -2px 2px 0 #000,
+      0 2px 0 #000,
+      2px 0 0 #000,
+      0 -2px 0 #000,
+      -2px 0 0 #000,
+      2px 2px 5px #000;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }
 
