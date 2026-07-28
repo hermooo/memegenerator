@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --color-bg: #faf5ff;
@@ -46,9 +46,8 @@ body {
     text-align: center;
     left: 50%;
     transform: translateX(-50%);
-    margin: 15px 0;
     padding: 0 5px;
-    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     font-size: 2em;
     color: white;
     letter-spacing: 1px;
@@ -72,4 +71,17 @@ body {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+@theme {
+  --breakpoint-xs: 375px;
 }
