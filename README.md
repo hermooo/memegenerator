@@ -1,75 +1,55 @@
-# React + TypeScript + Vite
+# Meme Generator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A client-side meme editor: browse Imgflip templates (or upload your own image), add top and bottom captions, adjust font size, and download a PNG.
 
-Currently, two official plugins are available:
+**Version:** 1.2.0
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Requirements
 
-## React Compiler
+- **Node.js** `20.19+` or `22.12+` (required by Vite 7). The repo includes [`.nvmrc`](.nvmrc) with `22`.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## Setup
 
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open the URL shown in the terminal (typically `http://localhost:5173`).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Scripts
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| Command           | Description                    |
+| ----------------- | ------------------------------ |
+| `npm run dev`     | Start Vite dev server          |
+| `npm run build`   | Typecheck and production build |
+| `npm run preview` | Preview production build       |
+| `npm run lint`    | Run ESLint                     |
+
+## Features (v1.2)
+
+- Searchable template grid with random picker
+- Favorite templates (stored in `localStorage`)
+- Custom image upload
+- Top/bottom captions, font size slider, uppercase toggle
+- Canvas export with word wrapping
+- Template list cached for 24 hours
+
+## Changelog
+
+### 1.2.0
+
+- Template browser with search and favorites
+- Image upload support
+- Caption font size and uppercase controls
+- Improved download pipeline with line wrapping
+- UI refresh with design tokens and mobile preview-first layout
+- Node.js engine documentation
+
+### 1.1.0
+
+- Initial random meme generator with Imgflip API and download
+
+## License
+
+Private project.
