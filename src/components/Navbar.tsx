@@ -1,17 +1,28 @@
 const Navbar = () => {
   return (
-    <header className='bg-purple-800 h-full md:h-20 py-5 md:py-0'>
-      <nav className='h-full flex flex-col md:flex-row md:justify-between items-center px-10 gap-2'>
-        <a href='/' className='text-white text-2xl font-semibold flex flex-row items-center'>
-          <img src='/logo.svg' alt='logo' className='h-10 w-10 mr-1' />
-          <span className='text-wrap text-center md:text-left leading-6'>Meme Template Generator</span>
+    <header className="bg-linear-to-r from-(--color-nav) to-(--color-nav-secondary)">
+      <nav className="mx-auto flex max-w-screen flex-col items-center justify-between gap-2 px-4 py-4 sm:flex-row sm:px-10">
+        <a href="/" className="flex items-center gap-2 text-white">
+          <img src="/logo.svg" alt="" className="h-9 w-9" aria-hidden />
+          <span className="font-display text-xl font-semibold tracking-tight sm:text-2xl">
+            Meme Generator
+          </span>
         </a>
-        <a href='https://github.com/hermooo' className='text-xs text-white' target='_blank' rel='noopener noreferrer'>
-          Developed by: <span className='font-bold'>hermooo</span>
-        </a>
+
+        <span className="text-xs font-bold text-white">
+          Made by{' '}
+          <a
+            href="https://www.hermooo.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors duration-200 hover:underline"
+          >
+            hermooo
+          </a>
+        </span>
       </nav>
     </header>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar
