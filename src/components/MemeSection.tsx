@@ -93,9 +93,11 @@ const MemeSection = () => {
     }
   }
 
+  const memeLoading = isLoading && !selectedMeme.url
+
   return (
-    <section className="flex min-h-[calc(100dvh-4rem)] flex-col lg:h-[calc(100dvh-4.3rem)] lg:min-h-0 lg:flex-row lg:overflow-hidden">
-      <div className="scrollbar-hide order-2 flex flex-1 justify-center overflow-y-auto px-4 py-6 lg:order-1 lg:min-h-0 lg:justify-start lg:pr-6 lg:pl-10">
+    <section className="mt-16 flex h-[calc(100dvh-4rem)] min-h-0 flex-col overflow-hidden lg:flex-row">
+      <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-6 sm:px-6 lg:max-w-xl lg:shrink-0 lg:px-8 lg:py-8 xl:max-w-2xl xl:px-10">
         <MemeEditorPanel
           selectedMeme={selectedMeme}
           templates={templates}
@@ -113,10 +115,21 @@ const MemeSection = () => {
           onDownload={() => void handleDownload()}
           onRetryTemplates={retry}
           templatesError={error}
+          mobilePreview={
+            <Meme
+              meme={selectedMeme}
+              isLoading={memeLoading}
+              variant="inline"
+            />
+          }
         />
       </div>
-      <div className="order-1 flex lg:order-2 lg:min-h-0 lg:flex-1">
-        <Meme meme={selectedMeme} isLoading={isLoading && !selectedMeme.url} />
+      <div className="relative hidden min-h-0 flex-1 border-l border-(--color-border) lg:block">
+        <Meme
+          meme={selectedMeme}
+          isLoading={memeLoading}
+          variant="stage"
+        />
       </div>
     </section>
   )

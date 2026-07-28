@@ -1,8 +1,8 @@
-import type { SelectedMeme } from '../types/meme'
+import type { ReactNode } from 'react'
+import type { MemeTemplate, SelectedMeme } from '../types/meme'
 import Button from './Button'
 import ImageUpload from './ImageUpload'
 import TemplatePicker from './TemplatePicker'
-import type { MemeTemplate } from '../types/meme'
 
 interface MemeEditorPanelProps {
   selectedMeme: SelectedMeme
@@ -21,6 +21,8 @@ interface MemeEditorPanelProps {
   onDownload: () => void
   onRetryTemplates: () => void
   templatesError: string | null
+  /** Mobile-only preview rendered above the download action. */
+  mobilePreview?: ReactNode
 }
 
 const MemeEditorPanel = ({
@@ -40,6 +42,7 @@ const MemeEditorPanel = ({
   onDownload,
   onRetryTemplates,
   templatesError,
+  mobilePreview,
 }: MemeEditorPanelProps) => {
   return (
     <div className="flex w-full max-w-lg flex-col gap-5">
@@ -178,6 +181,15 @@ const MemeEditorPanel = ({
           Uppercase captions
         </label>
       </section>
+
+      {mobilePreview && (
+        <section
+          aria-label="Meme preview"
+          className="lg:hidden"
+        >
+          {mobilePreview}
+        </section>
+      )}
 
       {downloadError && (
         <p role="alert" className="text-sm text-red-600">

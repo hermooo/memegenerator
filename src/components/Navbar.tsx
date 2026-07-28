@@ -1,6 +1,6 @@
 const Navbar = () => {
   return (
-    <header className="bg-linear-to-r from-(--color-nav) to-(--color-nav-secondary)">
+    <header className="fixed top-0 right-0 left-0 z-10 h-16 bg-linear-to-r from-(--color-nav) to-(--color-nav-secondary)">
       <nav className="mx-auto flex max-w-screen flex-col items-center justify-between gap-2 px-4 py-4 sm:flex-row sm:px-10">
         <a href="/" className="flex items-center gap-2 text-white">
           <img src="/logo.svg" alt="" className="h-9 w-9" aria-hidden />
